@@ -38,6 +38,18 @@ class BankingDatabase:
     def get_account(self, account_id: str) -> Optional[Dict]:
         return self.accounts.get(account_id)
 
+    def get_daily_transferred_amount(self, account_id: str, date_str: Optional[str] = None) -> float:
+        """Calculate total amount transferred by account_id on a given day (YYYY-MM-DD)."""
+        if not date_str:
+            date_str = datetime.now().strftime("%Y-%m-%d")
+        total = 0.0
+        for txn in self.transactions.values():
+            if txn.get("source_account_id") == account_id and txn.get("status") in ("COMPLETED", "PENDING"):
+                txn_time = txn.get("timestamp", "")
+                if txn_time.startswith(date_str):
+                    total += float(txn.get("amount", 0.0))
+        return round(total, 2)
+
     def get_balance(self, account_id: str) -> Dict:
         account = self.get_account(account_id)
         if not account:
@@ -45,6 +57,10 @@ class BankingDatabase:
                 "success": False,
                 "error": f"Account '{account_id}' not found."
             }
+        daily_limit = float(account.get("daily_limit", mockdata.DEFAULT_DAILY_LIMIT))
+        transferred_today = self.get_daily_transferred_amount(account_id)
+        remaining_daily_limit = max(0.0, round(daily_limit - transferred_today, 2))
+
         return {
             "success": True,
             "account_id": account["account_id"],
@@ -53,6 +69,9 @@ class BankingDatabase:
             "currency": account["currency"],
             "currency_symbol": account.get("currency_symbol", "₹"),
             "status": account["status"],
+            "daily_limit": daily_limit,
+            "transferred_today": transferred_today,
+            "remaining_daily_limit": remaining_daily_limit,
         }
 
     def find_beneficiaries(self, account_id: str = mockdata.DEFAULT_USER_ACCOUNT) -> Dict:

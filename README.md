@@ -27,23 +27,45 @@ The agent is equipped with four core banking tools operating against an in-memor
 
 ```
 harness engineering/
+├── services/                             # ✨ Stage 2: Policy & Guardrail Harness
+│   ├── __init__.py
+│   ├── policy_service.py                 # Core validation and confirmation policies
+│   └── policy_Service.py                 # Compatibility alias
 ├── src/
-│   ├── __init__.py          # Exports core components
-│   ├── prompts.py           # System prompt (4 tools, INR ₹ format)
-│   ├── mockdata.py          # Indian retail banking demo data
-│   ├── bank_tools.py        # Banking tool declarations for Gemini
-│   ├── bank_db.py           # In-memory bank state & transaction ledger
-│   └── naive_agent.py       # Google GenAI SDK Agent loop
+│   ├── __init__.py                       # Core package exports
+│   ├── prompts.py                        # System prompt with policy rules
+│   ├── mockdata.py                       # Indian retail banking demo data
+│   ├── bank_tools.py                     # Banking tools wrapped with policy harness
+│   ├── bank_db.py                        # In-memory bank state & ledger
+│   └── naive_agent.py                    # Agent loop
 ├── tests/
 │   ├── __init__.py
-│   └── test_banking_agent.py# Automated verification test suite
-├── main.py                  # Interactive CLI entrypoint
-├── requirements.txt         # Project dependencies
-├── .env.example             # Environment variable template
-├── .env                     # Local environment file
-├── .gitignore               # Git ignore rules
-└── README.md                # Project documentation
+│   ├── test_policy_service.py            # Unit test suite for all Stage 2 policies
+│   └── test_banking_agent.py             # Agent integration tests
+├── banking_agent/                        # Google ADK agent package
+│   ├── __init__.py
+│   └── agent.py
+├── main.py                               # CLI runner
+├── requirements.txt
+├── .env
+├── .env.example
+├── .gitignore
+└── README.md
 ```
+
+---
+
+## 🛡️ Stage 2 Policy Rules
+
+Before any money is transferred, `services/policy_service.py` evaluates:
+1. **`amount > 0`**: Transfer amount must be positive.
+2. **`account status == 'ACTIVE'`**: Sender account must be active (not FROZEN or CLOSED).
+3. **Beneficiary Match**:
+   - `matches == 0`: No match $\rightarrow$ Transfer denied.
+   - `matches > 1`: Ambiguous $\rightarrow$ Requires user confirmation of specific account.
+   - `matches == 1`: Exactly 1 match $\rightarrow$ Transfer permitted.
+4. **`amount <= balance`**: Cannot exceed available balance.
+5. **`transferred_today + amount <= daily_limit`**: Cumulative daily transfers must stay within daily allowance.
 
 ---
 

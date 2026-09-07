@@ -37,8 +37,10 @@ def run_tests():
     test_queries = [
         ("Test 1: Check Account Balance", "What is my current account balance?"),
         ("Test 2: Find Beneficiaries", "Can you show me all my registered beneficiaries?"),
-        ("Test 3: Transfer Money", "Please transfer ₹2,500 to Rahul Verma for dinner."),
-        ("Test 4: Check Transaction Status", "Can you check the status of transaction TXN1001?"),
+        ("Test 3: Policy Guardrail - Ambiguous Match", "Please transfer ₹1,000 to Rahul for coffee."),
+        ("Test 4: Policy Guardrail - Daily Limit Exceeded", "Please transfer ₹60,000 to Sneha Rao for rent."),
+        ("Test 5: Valid Transfer Execution", "Please transfer ₹2,500 to Rahul Verma for dinner."),
+        ("Test 6: Check Transaction Status", "Can you check the status of transaction TXN1001?"),
     ]
 
     initial_balance = bank_db.get_account("ACC1001")["balance"]

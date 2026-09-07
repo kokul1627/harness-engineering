@@ -4,6 +4,7 @@ Contains demo accounts, beneficiaries, and transaction history in Indian Rupees 
 """
 
 DEFAULT_USER_ACCOUNT = "ACC1001"
+DEFAULT_DAILY_LIMIT = 50000.00
 
 # Demo Customer Accounts
 ACCOUNTS = {
@@ -11,6 +12,7 @@ ACCOUNTS = {
         "account_id": "ACC1001",
         "owner_name": "Priya Sharma",
         "balance": 75000.00,
+        "daily_limit": 50000.00,
         "currency": "INR",
         "currency_symbol": "₹",
         "bank_name": "HDFC Bank",
@@ -21,6 +23,7 @@ ACCOUNTS = {
         "account_id": "ACC1002",
         "owner_name": "Kavita Nair",
         "balance": 18500.50,
+        "daily_limit": 50000.00,
         "currency": "INR",
         "currency_symbol": "₹",
         "bank_name": "HDFC Bank",
@@ -31,6 +34,7 @@ ACCOUNTS = {
         "account_id": "ACC2001",
         "owner_name": "Rahul Verma",
         "balance": 42000.00,
+        "daily_limit": 50000.00,
         "currency": "INR",
         "currency_symbol": "₹",
         "bank_name": "ICICI Bank",
@@ -39,8 +43,9 @@ ACCOUNTS = {
     },
     "ACC2002": {
         "account_id": "ACC2002",
-        "owner_name": "Rahul Gandhi",
+        "owner_name": "Sneha Rao",
         "balance": 15000.00,
+        "daily_limit": 50000.00,
         "currency": "INR",
         "currency_symbol": "₹",
         "bank_name": "State Bank of India",
@@ -51,15 +56,39 @@ ACCOUNTS = {
         "account_id": "ACC2003",
         "owner_name": "Amit Patel",
         "balance": 63000.00,
+        "daily_limit": 50000.00,
         "currency": "INR",
         "currency_symbol": "₹",
         "bank_name": "Axis Bank",
         "ifsc_code": "UTIB0001122",
         "status": "ACTIVE",
     },
+    "ACC2004": {
+        "account_id": "ACC2004",
+        "owner_name": "Rahul Sharma",
+        "balance": 28000.00,
+        "daily_limit": 50000.00,
+        "currency": "INR",
+        "currency_symbol": "₹",
+        "bank_name": "HDFC Bank",
+        "ifsc_code": "HDFC0005678",
+        "status": "ACTIVE",
+    },
+    "ACC9001": {
+        "account_id": "ACC9001",
+        "owner_name": "Priya Sharma (Dormant)",
+        "balance": 10000.00,
+        "daily_limit": 50000.00,
+        "currency": "INR",
+        "currency_symbol": "₹",
+        "bank_name": "HDFC Bank",
+        "ifsc_code": "HDFC0001234",
+        "status": "FROZEN",
+    },
 }
 
 # Registered Beneficiaries for Accounts
+# Notice ACC1001 has two beneficiaries with the name / nickname 'Rahul' to test ambiguous matching!
 BENEFICIARIES = {
     "ACC1001": [
         {
@@ -72,7 +101,7 @@ BENEFICIARIES = {
         },
         {
             "beneficiary_id": "BENEF002",
-            "name": "Rahul Gandhi",
+            "name": "Sneha Rao",
             "nickname": "Sneha",
             "account_id": "ACC2002",
             "bank_name": "State Bank of India",
@@ -85,6 +114,14 @@ BENEFICIARIES = {
             "account_id": "ACC2003",
             "bank_name": "Axis Bank",
             "ifsc_code": "UTIB0001122",
+        },
+        {
+            "beneficiary_id": "BENEF004",
+            "name": "Rahul Sharma",
+            "nickname": "Rahul",
+            "account_id": "ACC2004",
+            "bank_name": "HDFC Bank",
+            "ifsc_code": "HDFC0005678",
         },
     ]
 }
@@ -106,7 +143,7 @@ TRANSACTIONS = {
         "transaction_id": "TXN1002",
         "source_account_id": "ACC1001",
         "destination_account_id": "ACC2002",
-        "recipient_name": "Rahul Gandhi",
+        "recipient_name": "Sneha Rao",
         "amount": 1200.00,
         "currency": "INR",
         "status": "COMPLETED",
