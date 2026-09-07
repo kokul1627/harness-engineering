@@ -9,6 +9,8 @@ from .bank_tools import (
     BANKING_TOOLS,
     get_balance,
     find_beneficiaries,
+    initiate_transfer,
+    confirm_transfer,
     transfer_money,
     get_transaction_status,
 )
@@ -25,6 +27,8 @@ __all__ = [
     "BANKING_TOOLS",
     "get_balance",
     "find_beneficiaries",
+    "initiate_transfer",
+    "confirm_transfer",
     "transfer_money",
     "get_transaction_status",
     "NaiveBankingAgent",

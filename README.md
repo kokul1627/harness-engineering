@@ -1,25 +1,14 @@
-# Naive Banking Agent (Stage 1: No Harness)
+# Retail Banking AI Agent (Harness Engineering Stages 1 - 4)
 
-A conversational AI banking agent developed using the **Google GenAI SDK** and **Gemini Flash**. 
+A conversational AI banking agent developed using the **Google GenAI SDK**, **Gemini 3.6 Flash**, and **Google Agent Development Kit (ADK)**. 
 
-This repository serves as **Stage 1** of a multi-stage **Harness Engineering** project:
-- **Stage 1 (Current)**: **Naive Agent (No Harness)** — Direct tool calling with LLM, establishing baseline behavior and measuring tool accuracy.
-- **Subsequent Stages**: Test harness, safety guardrail harness, evaluation harness, and mock transaction harnesses.
+This project demonstrates the progressive engineering evolution across **4 Stages of Harness Engineering**:
+1. **Stage 1: Naive Baseline Agent** — Raw LLM tool calling with no harness.
+2. **Stage 2: Policy & Guardrail Harness** — Deterministic validation (beneficiary resolution, positive amount, active status, balance check, daily limits).
+3. **Stage 3: Human-in-the-Loop (HITL) Harness** — Two-phase commitment (`initiate_transfer` $\rightarrow$ `confirm_transfer`) requiring explicit human authorization.
+4. **Stage 4: Observability & Monitoring Harness** — Real-time workflow tracing, latency tracking, and audit logging to monitor the agent and troubleshoot production issues.
 
----
-
-## 🛠️ Features & Banking Tools
-
-The agent is equipped with four core banking tools operating against an in-memory banking ledger:
-
-1. `get_balance(account_id: str)`
-   - Fetches real-time account balance, currency, and account status.
-2. `get_beneficiaries(account_id: str)`
-   - Lists registered beneficiaries (name, account number, bank, nickname) to whom funds can be sent.
-3. `transfer_money(source_account_id: str, destination_account_id: str, amount: float, remarks: str)`
-   - Validates balance, debits source account, credits destination account, and generates a transaction record.
-4. `get_transaction_status(transaction_id: str)`
-   - Retrieves transaction details and status (`COMPLETED`, `PENDING`, `FAILED`).
+> 📖 **Comprehensive Documentation**: See [HARNESS_STAGES.md](file:///c:/mppeapril/applications/collections/genai%20projects/harness%20engineering/HARNESS_STAGES.md) for full architectural explanations, sequence diagrams, and production diagnostic guides.
 
 ---
 
@@ -27,24 +16,29 @@ The agent is equipped with four core banking tools operating against an in-memor
 
 ```
 harness engineering/
-├── services/                             # ✨ Stage 2: Policy & Guardrail Harness
+├── services/                             # Harness & Business Logic
 │   ├── __init__.py
-│   ├── policy_service.py                 # Core validation and confirmation policies
-│   └── policy_Service.py                 # Compatibility alias
+│   ├── policy_service.py                 # Stage 2: Policy & Guardrail Harness
+│   ├── transfer_service.py               # Stage 3: Human-in-the-Loop (HITL) Harness
+│   └── observability_service.py          # Stage 4: Observability & Monitoring Harness
+├── logs/
+│   └── agent_workflow.jsonl              # Structured audit & telemetry logs
 ├── src/
 │   ├── __init__.py                       # Core package exports
-│   ├── prompts.py                        # System prompt with policy rules
+│   ├── prompts.py                        # System prompt with HITL 2-step protocol
 │   ├── mockdata.py                       # Indian retail banking demo data
-│   ├── bank_tools.py                     # Banking tools wrapped with policy harness
+│   ├── bank_tools.py                     # Traced banking tools
 │   ├── bank_db.py                        # In-memory bank state & ledger
-│   └── naive_agent.py                    # Agent loop
+│   └── naive_agent.py                    # Direct Agent loop
 ├── tests/
 │   ├── __init__.py
-│   ├── test_policy_service.py            # Unit test suite for all Stage 2 policies
+│   ├── test_policy_service.py            # Unit tests for Stage 2 policies
+│   ├── test_hitl_transfer.py             # Unit tests for Stage 3 HITL harness
 │   └── test_banking_agent.py             # Agent integration tests
 ├── banking_agent/                        # Google ADK agent package
 │   ├── __init__.py
 │   └── agent.py
+├── HARNESS_STAGES.md                     # Comprehensive 4-Stage Architectural Guide
 ├── main.py                               # CLI runner
 ├── requirements.txt
 ├── .env
@@ -52,6 +46,19 @@ harness engineering/
 ├── .gitignore
 └── README.md
 ```
+
+---
+
+## 🤝 Stage 3: Human-in-the-Loop (HITL) Protocol
+
+1. **Phase 1: `initiate_transfer`**
+   - Validates all Stage 2 policies (beneficiary matching, amount > 0, active account, balance, daily limits).
+   - Generates a unique `confirmation_id` (e.g. `CONF-9B2A1C`) with an expiration timer.
+   - **Zero funds are moved.** The agent presents the transfer details and asks the user to confirm.
+2. **Phase 2: `confirm_transfer`**
+   - If user replies YES / confirms: Executes the transfer on the bank ledger, debits balance, and returns transaction receipt.
+   - If user replies NO / cancels: Marks request as `CANCELLED`, leaving account balance completely untouched.
+   - Replay prevention: Once processed, a `confirmation_id` cannot be reused.
 
 ---
 

@@ -125,13 +125,14 @@ class TestPolicyService(unittest.TestCase):
         """Policy: when all policies pass and matches == 1 -> transfer approved."""
         initial_balance = bank_db.get_account("ACC1001")["balance"]
 
-        # Tool execution with policy harness
+        # Tool execution with policy harness (auto_confirm=True for single-shot test)
         result = transfer_money(
             source_account_id="ACC1001",
             destination_account_id="",
             recipient="Sneha Rao",
             amount=2000.0,
             remarks="Project share",
+            auto_confirm=True,
         )
         self.assertTrue(result.get("success"))
         self.assertEqual(result.get("status"), "COMPLETED")
@@ -160,6 +161,7 @@ class TestPolicyService(unittest.TestCase):
             amount=1200.0,
             confirmed_account_id="ACC2004",
             remarks="Confirmed transfer to Rahul Sharma",
+            auto_confirm=True,
         )
         self.assertTrue(step2.get("success"))
         self.assertEqual(step2.get("destination_account_id"), "ACC2004")
